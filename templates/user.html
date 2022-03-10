@@ -1,5 +1,6 @@
+<!--기능적으로 mapinpage.html과 동일 -->
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,23 +12,22 @@
     <title>Title</title>
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="/static/css/mainpage.css"/>
 
-    <!--removeCookie를 위한 jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <link rel="stylesheet" href="/static/css/user.css"/>
+
     <script>
 
         function logout() {
             $.removeCookie('mytoken', {path: '/'});
             window.location.href = "/"
         }
-        <!--로그인 페이지로 이동-->
-        function login() {
-            window.location.href = "/login"
+
+        function newpost() {
+            window.location.href = "/write"
+            //작성페이지 URL
         }
-        <!--게시물 삭제-->
         function delete_btn(idx){
             $.ajax({
                 type:"POST",
@@ -38,14 +38,13 @@
                 }
             })
         }
-        <!--좋아요 기능-->
         function toggle_like(post_id, type) {
             let $a_like = $(`.${post_id}_modal a[aria-label='heart-modal']`)
             let $i_like = $a_like.find("i")
             let $a_like_card = $(`.${post_id}_card a[aria-label='heart-card']`)
             let $i_like_card = $a_like_card.find("i")
 
-            //좋아요 취소에 해당
+
             if ($i_like.hasClass("fa-heart")) {
                 $.ajax({
                     type: "POST",
@@ -67,7 +66,7 @@
 
                     }
                 })
-            } else {//좋아요에 해당
+            } else {
                 $.ajax({
                     type: "POST",
                     url: "/update_like",
@@ -104,35 +103,28 @@
             return count
         }
     </script>
-    <style>
-
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 </head>
-
 <body>
 <!-- 제목 -->
-<header class="">
-    <div class="title">
-        <a href="/"><h1>Trip In Korea</h1></a>
+<header>
+<div class="title">
+    <a href="/"><h1>Trip In Korea</h1></a>
+</div>
+<div class="upper-func-box">
+    {% if userid %}
+    <div class="name_box">
+        <a href="{{ url_for('user_get') }}"><button class="btn btn-light">{{ userid }} MyPage</button></a>
     </div>
-
-    <!--우측 상단 표시부/ 로그인 전후에 따라 기능 구분-->
-    <div class="upper-func-box">
-        {% if userid %}<!--로그인 했을 시 마이페이지 가기와 로그아웃 버튼 표출-->
-        <div class="name_box">
-            <a href="{{ url_for('user_get') }}">
-                <button class="btn btn-light">{{ userid }} MyPage</button>
-            </a>
-        </div>
-        <div class="logout_box">
-            <button class="btn btn-light" onclick="logout()">Logout</button>
-        </div>
-        {% else %}<!--로그인 안 했을 시 로그인 칸이 표출-->
-        <div class="name_box">
-            <button class="btn btn-light" onclick="login()">Sign-in</button>
-        </div>
-        {% endif %}
+    <div class="logout_box">
+        <button class="btn btn-light" onclick="logout()">Logout</button>
     </div>
+    {% else %}
+    <div class="name_box">
+        <a href="/login"><button></button>Sign-in</a>
+    </div>
+    {% endif %}
+</div>
 </header>
 <section>
 <!-- 타이틀 이미지 -->
@@ -173,36 +165,34 @@
 
 <!-- 위치 별 나눔 -->
 <div class="col-md-8 total-box">
-    <form method="GET" action="{{ url_for('sortByArea') }}">
-        <div class="filters-wrap mt-5 mb-3">
-            <select class="filter-select btn-area" id="area" name="area" onchange="this.form.submit()">
-                <option selected value="지역">지역</option>
-                <option value="전체">전체보기</option>
-                <option value="서울특별시">서울특별시</option>
-                <option value="부산광역시">부산광역시</option>
-                <option value="대구광역시">대구광역시</option>
-                <option value="인천광역시">인천광역시</option>
-                <option value="광주광역시">광주광역시</option>
-                <option value="대전광역시">대전광역시</option>
-                <option value="울산광역시">울산광역시</option>
-                <option value="세종특별자치시">세종특별자치시</option>
-                <option value="경기도">경기도</option>
-                <option value="강원도">강원도</option>
-                <option value="충청북도">충청북도</option>
-                <option value="충청남도">충청남도</option>
-                <option value="전라북도">전라북도</option>
-                <option value="전라남도">전라남도</option>
-                <option value="경상북도">경상북도</option>
-                <option value="경상남도">경상남도</option>
-                <option value="제주특별자치도">제주특별자치도</option>
-            </select>
-        </div>
-    </form>
+<form method="GET" action="{{ url_for('sortByAreaMyPage') }}">
+    <div class="filters-wrap mt-5 mb-3">
+        <select class="filter-select btn-area" id="area" name="area" onchange="this.form.submit()">
+            <option selected value="지역">지역</option>
+            <option value="전체">전체보기</option>
+            <option value="서울특별시">서울특별시</option>
+            <option value="부산광역시">부산광역시</option>
+            <option value="대구광역시">대구광역시</option>
+            <option value="인천광역시">인천광역시</option>
+            <option value="광주광역시">광주광역시</option>
+            <option value="대전광역시">대전광역시</option>
+            <option value="울산광역시">울산광역시</option>
+            <option value="세종특별자치시">세종특별자치시</option>
+            <option value="경기도">경기도</option>
+            <option value="강원도">강원도</option>
+            <option value="충청북도">충청북도</option>
+            <option value="충청남도">충청남도</option>
+            <option value="전라북도">전라북도</option>
+            <option value="전라남도">전라남도</option>
+            <option value="경상북도">경상북도</option>
+            <option value="경상남도">경상남도</option>
+            <option value="제주특별자치도">제주특별자치도</option>
+        </select>
+    </div>
+</form>
 
-    <!-- 게시물 카드 -->
-
-    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
-        <!--로그인한 유저만 글 작성 기능 사용할 수 있음-->
+<!-- 게시물 카드 -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
          {% if userid %}
         <div class="col">
             <div class="card h-100">
@@ -211,7 +201,6 @@
             </div>
         </div>
         {% endif %}
-        <!--list로 받아온 docs를 for문을 돌려서 하나하나에 접근/ 모달과 함께 사용하기 위해 모달도 for문에 포함-->
          {% for doc in docs %}
         <div class="col {{ doc._id }}_card" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
             <div class="card h-100">
@@ -225,16 +214,13 @@
                             <div>
                                 <a class="level-item is-sparta" aria-label="heart-card"
                                    onclick="toggle_like('{{doc._id}}', 'heart')">
-                                    {% if doc.heart_by_me %} <!--내가 이미 누른 좋아요 누른 게시물-->
-                                    <span class="icon is-small">
-                                        <i class="fa fa-heart" aria-hidden="true"></i>
-                                    </span>&nbsp;
-                                    <span class="like-num">{{doc.count_heart}}</span>
-                                    {% else %} <!--좋아요 누르지 않은 게시물-->
-                                    <span class="icon is-small">
-                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                    </span>&nbsp;
-                                    <span class="like-num">{{doc.count_heart}}</span>
+                                    {% if doc.heart_by_me %}
+                                    <span class="icon is-small"><i class="fa fa-heart"
+                                                                   aria-hidden="true"></i></span>&nbsp;<span
+                                        class="like-num">{{doc.count_heart}}</span>
+                                    {% else %}
+                                    <span class="icon is-small"><i class="fa fa-heart-o" aria-hidden="true"></i></span>&nbsp;<span
+                                        class="like-num">{{doc.count_heart}}</span>
                                     {% endif %}
                                 </a>
                             </div>
@@ -243,7 +229,6 @@
                 </div>
             </div>
         </div>
-        <!--모달 구현 시작 // for문 돌때마다 id값의 변화를 위해 {{loop.index}} 사용-->
         <div class="modal fade {{ doc._id }}_modal" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-resize modal-dialog-centered">
                 <div class="modal-content modal-resize">
@@ -277,7 +262,8 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 
-                        <!-- 토큰이 없거나, 받은 토큰의 아이디가 게시물의 아이디랑 일치하지 않으면 삭제,수정 버튼 띄우지 않음 -->
+                        <!— 토큰이 없거나, 받은 토큰의 아이디가 게시물의 아이디랑 일치하지 않으면 삭제,수정 버튼
+                        띄우지 않음 —>
                         {% if userid == doc.userid%}
                         <button type="button" class="btn btn-danger" onclick="delete_btn('{{ doc._id }}')">삭제</button>
                         <a href="{{ url_for('update',idx=doc._id)}}"><button type="button" class="btn btn-primary">수정</button></a>
@@ -286,9 +272,8 @@
                     </div>
                 </div>
             </div>
-
     </div>
-{% endfor %}
+    {% endfor %}
     </div>
 </div>
 </section>
